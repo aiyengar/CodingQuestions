@@ -1,0 +1,84 @@
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    
+    def isLeaf(self,node):
+        if not node.left and not node.right:
+            return True
+        return False
+    
+    def addLeaves(self,root,resultList):
+        if not root:
+            return resultList
+        
+        if self.isLeaf(root):
+            resultList.append(root.val)
+        
+        else:
+            if root.left:
+                resultList = self.addLeaves(root.left,resultList)
+            
+            if root.right:
+                resultList = self.addLeaves(root.right,resultList)
+        
+        return resultList
+        
+    def boundaryOfBinaryTree(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        #1.Traverse the path of the left most node and add all nodes to left boundary.
+        #2.Traverse the path of the right most node and all nodes to right boundary.
+        #3.Find all the leaf nodes and add nodes to leaves.
+        #4.combine all the three lists from 1 to 3 in that order and remove duplicates.
+        resultList = []
+        queue = []
+        leftBoundary = []
+        rightBoundary = []
+        
+        # Base case
+        if root is None:
+            return []
+        
+        resultList.append(root.val)
+        
+        if root.left is None and root.right is None:
+            return resultList
+        
+        # Form the left boundary
+        temp = root.left
+        while temp:
+            if not self.isLeaf(temp):
+                resultList.append(temp.val)
+            
+            if temp.left:
+                temp = temp.left
+            
+            else:
+                temp = temp.right
+        
+        # Form the leaves     
+        resultList.extend(self.addLeaves(root,[]))
+        
+        
+        # Form the right boundary
+        temp = root.right
+        while temp:
+            if not self.isLeaf(temp):
+                rightBoundary.append(temp.val)
+            
+            if temp.right:
+                temp = temp.right
+            
+            else:
+                temp = temp.left 
+        
+        rightBoundary = rightBoundary[::-1]
+        resultList.extend(rightBoundary)
+        return resultList
